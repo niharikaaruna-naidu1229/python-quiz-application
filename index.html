@@ -1,0 +1,1005 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Python Quiz App</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+
+            background:
+                radial-gradient(circle at top left, #243b55, transparent 40%),
+                radial-gradient(circle at bottom right, #16213e, transparent 40%),
+                #0b1220;
+
+            color: white;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 720px;
+
+            background: rgba(255, 255, 255, 0.08);
+
+            border: 1px solid rgba(255, 255, 255, 0.12);
+
+            border-radius: 24px;
+
+            padding: 35px;
+
+            backdrop-filter: blur(18px);
+
+            box-shadow:
+                0 25px 60px rgba(0, 0, 0, 0.45);
+        }
+
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #b7c3d0;
+            font-size: 15px;
+        }
+
+
+        /* PROGRESS */
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+
+            color: #9fb3c8;
+
+            font-size: 14px;
+
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+
+            background: rgba(255, 255, 255, 0.1);
+
+            border-radius: 10px;
+
+            overflow: hidden;
+
+            margin-bottom: 30px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 10%;
+
+            background: linear-gradient(
+                90deg,
+                #00c6ff,
+                #0072ff
+            );
+
+            border-radius: 10px;
+
+            transition: width 0.4s ease;
+        }
+
+
+        /* QUESTION */
+
+        .question-number {
+            color: #4fc3f7;
+
+            font-size: 14px;
+
+            font-weight: bold;
+
+            margin-bottom: 10px;
+        }
+
+        #question {
+            font-size: 24px;
+
+            line-height: 1.4;
+
+            margin-bottom: 25px;
+        }
+
+
+        /* OPTIONS */
+
+        .options {
+            display: grid;
+
+            grid-template-columns: 1fr 1fr;
+
+            gap: 14px;
+        }
+
+        .option {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+
+            background: rgba(255, 255, 255, 0.06);
+
+            color: white;
+
+            padding: 17px;
+
+            border-radius: 14px;
+
+            font-size: 16px;
+
+            text-align: left;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.2s,
+                background 0.2s,
+                border 0.2s;
+        }
+
+        .option:hover {
+            transform: translateY(-3px);
+
+            background: rgba(255, 255, 255, 0.13);
+
+            border-color: #4fc3f7;
+        }
+
+        .option.correct {
+            background: rgba(46, 125, 50, 0.85);
+
+            border-color: #66bb6a;
+
+            transform: none;
+        }
+
+        .option.wrong {
+            background: rgba(198, 40, 40, 0.85);
+
+            border-color: #ef5350;
+
+            transform: none;
+        }
+
+        .option:disabled {
+            cursor: default;
+        }
+
+
+        /* FEEDBACK */
+
+        #feedback {
+            min-height: 30px;
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            font-size: 17px;
+
+            font-weight: bold;
+        }
+
+        .correct-text {
+            color: #69f0ae;
+        }
+
+        .wrong-text {
+            color: #ff8a80;
+        }
+
+
+        /* NEXT BUTTON */
+
+        #nextBtn {
+            display: block;
+
+            margin: 22px auto 0;
+
+            padding: 13px 30px;
+
+            border: none;
+
+            border-radius: 30px;
+
+            background: linear-gradient(
+                135deg,
+                #00c6ff,
+                #0072ff
+            );
+
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition: transform 0.2s;
+        }
+
+        #nextBtn:hover {
+            transform: scale(1.05);
+        }
+
+
+        .hidden {
+            display: none !important;
+        }
+
+
+        /* RESULT */
+
+        #result {
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 70px;
+
+            margin-bottom: 10px;
+        }
+
+        #result h2 {
+            font-size: 32px;
+
+            margin-bottom: 10px;
+        }
+
+        .result-subtitle {
+            color: #b7c3d0;
+
+            margin-bottom: 20px;
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+
+            margin: 25px auto;
+
+            border-radius: 50%;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            align-items: center;
+
+            background:
+                radial-gradient(
+                    circle,
+                    #172a46 55%,
+                    transparent 56%
+                );
+
+            border: 5px solid #00c6ff;
+        }
+
+        .score-number {
+            font-size: 38px;
+
+            font-weight: bold;
+
+            color: #4fc3f7;
+        }
+
+        .score-label {
+            color: #aab8c5;
+
+            font-size: 13px;
+        }
+
+        #resultMessage {
+            font-size: 18px;
+
+            margin: 15px 0 25px;
+        }
+
+        #restartBtn {
+            border: none;
+
+            padding: 14px 30px;
+
+            border-radius: 30px;
+
+            background: white;
+
+            color: #16213e;
+
+            font-weight: bold;
+
+            font-size: 16px;
+
+            cursor: pointer;
+
+            transition: transform 0.2s;
+        }
+
+        #restartBtn:hover {
+            transform: scale(1.05);
+        }
+
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+
+            color: #73859a;
+
+            font-size: 12px;
+
+            margin-top: 28px;
+        }
+
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 25px 18px;
+            }
+
+            h1 {
+                font-size: 27px;
+            }
+
+            #question {
+                font-size: 20px;
+            }
+
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="icon">🧠</div>
+
+        <h1>Python Quiz</h1>
+
+        <p class="subtitle">
+            Test your Python & General Knowledge
+        </p>
+
+    </div>
+
+
+    <!-- QUIZ -->
+
+    <div id="quiz">
+
+
+        <div class="progress-info">
+
+            <span id="progressText">
+                Question 1 of 10
+            </span>
+
+            <span id="scoreText">
+                Score: 0
+            </span>
+
+        </div>
+
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                id="progressFill">
+            </div>
+
+        </div>
+
+
+        <div
+            class="question-number"
+            id="questionNumber">
+            QUESTION 01
+        </div>
+
+
+        <h2 id="question">
+            Loading question...
+        </h2>
+
+
+        <div
+            class="options"
+            id="options">
+        </div>
+
+
+        <div id="feedback"></div>
+
+
+        <button
+            id="nextBtn"
+            class="hidden">
+
+            Next Question →
+
+        </button>
+
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="result"
+        class="hidden">
+
+        <div class="result-icon">
+            🏆
+        </div>
+
+        <h2>Quiz Completed!</h2>
+
+        <p class="result-subtitle">
+            Here is your final performance
+        </p>
+
+
+        <div class="score-circle">
+
+            <div
+                class="score-number"
+                id="finalScore">
+
+                0/10
+
+            </div>
+
+            <div class="score-label">
+                SCORE
+            </div>
+
+        </div>
+
+
+        <p id="resultMessage"></p>
+
+
+        <button id="restartBtn">
+            🔄 Try Again
+        </button>
+
+    </div>
+
+
+    <div class="footer">
+        Built with HTML, CSS & JavaScript • Python Quiz Project
+    </div>
+
+</div>
+
+
+<script>
+
+
+    /* =========================
+       QUESTIONS
+    ========================= */
+
+
+    const questions = [
+
+        {
+            question: "What is the capital of India?",
+
+            options: [
+                "Delhi",
+                "Mumbai",
+                "Chennai",
+                "Kolkata"
+            ],
+
+            answer: 0
+        },
+
+
+        {
+            question: "Which language is mainly used for AI?",
+
+            options: [
+                "C++",
+                "Python",
+                "Java",
+                "Ruby"
+            ],
+
+            answer: 1
+        },
+
+
+        {
+            question: "What is 5 + 7?",
+
+            options: [
+                "10",
+                "11",
+                "12",
+                "13"
+            ],
+
+            answer: 2
+        },
+
+
+        {
+            question: "Who wrote 'Romeo and Juliet'?",
+
+            options: [
+                "William Shakespeare",
+                "Charles Dickens",
+                "J.K. Rowling",
+                "Mark Twain"
+            ],
+
+            answer: 0
+        },
+
+
+        {
+            question: "What is the largest planet in our Solar System?",
+
+            options: [
+                "Earth",
+                "Jupiter",
+                "Saturn",
+                "Mars"
+            ],
+
+            answer: 1
+        },
+
+
+        {
+            question: "What does CPU stand for?",
+
+            options: [
+                "Central Processing Unit",
+                "Computer Processing User",
+                "Central Program Utility",
+                "Control Processing Unit"
+            ],
+
+            answer: 0
+        },
+
+
+        {
+            question: "Which data type is used for True or False in Python?",
+
+            options: [
+                "String",
+                "Integer",
+                "Boolean",
+                "Float"
+            ],
+
+            answer: 2
+        },
+
+
+        {
+            question: "Which symbol is used to write a comment in Python?",
+
+            options: [
+                "//",
+                "#",
+                "/*",
+                "@"
+            ],
+
+            answer: 1
+        },
+
+
+        {
+            question: "What is the output of 2 * 3?",
+
+            options: [
+                "5",
+                "6.5",
+                "9",
+                "6"
+            ],
+
+            answer: 3
+        },
+
+
+        {
+            question: "Which keyword is used to define a function in Python?",
+
+            options: [
+                "def",
+                "function",
+                "fun",
+                "define"
+            ],
+
+            answer: 0
+        }
+
+    ];
+
+
+    /* =========================
+       VARIABLES
+    ========================= */
+
+
+    let currentQuestion = 0;
+
+    let score = 0;
+
+    let answered = false;
+
+
+    /* =========================
+       ELEMENTS
+    ========================= */
+
+
+    const question =
+        document.getElementById("question");
+
+    const options =
+        document.getElementById("options");
+
+    const feedback =
+        document.getElementById("feedback");
+
+    const nextBtn =
+        document.getElementById("nextBtn");
+
+    const progressText =
+        document.getElementById("progressText");
+
+    const progressFill =
+        document.getElementById("progressFill");
+
+    const questionNumber =
+        document.getElementById("questionNumber");
+
+    const scoreText =
+        document.getElementById("scoreText");
+
+    const quiz =
+        document.getElementById("quiz");
+
+    const result =
+        document.getElementById("result");
+
+    const finalScore =
+        document.getElementById("finalScore");
+
+    const resultMessage =
+        document.getElementById("resultMessage");
+
+
+    /* =========================
+       LOAD QUESTION
+    ========================= */
+
+
+    function loadQuestion() {
+
+        answered = false;
+
+        feedback.textContent = "";
+
+        feedback.className = "";
+
+        nextBtn.classList.add("hidden");
+
+
+        const current =
+            questions[currentQuestion];
+
+
+        question.textContent =
+            current.question;
+
+
+        progressText.textContent =
+            `Question ${currentQuestion + 1} of ${questions.length}`;
+
+
+        scoreText.textContent =
+            `Score: ${score}`;
+
+
+        questionNumber.textContent =
+            `QUESTION ${String(currentQuestion + 1).padStart(2, "0")}`;
+
+
+        const progress =
+            ((currentQuestion + 1) / questions.length) * 100;
+
+
+        progressFill.style.width =
+            progress + "%";
+
+
+        options.innerHTML = "";
+
+
+        current.options.forEach(
+            (option, index) => {
+
+                const button =
+                    document.createElement("button");
+
+
+                button.className = "option";
+
+
+                button.textContent =
+                    `${String.fromCharCode(97 + index)}) ${option}`;
+
+
+                button.addEventListener(
+                    "click",
+                    () => checkAnswer(index, button)
+                );
+
+
+                options.appendChild(button);
+
+            }
+        );
+
+    }
+
+
+    /* =========================
+       CHECK ANSWER
+    ========================= */
+
+
+    function checkAnswer(
+        selectedIndex,
+        selectedButton
+    ) {
+
+        if (answered) {
+            return;
+        }
+
+
+        answered = true;
+
+
+        const correctIndex =
+            questions[currentQuestion].answer;
+
+
+        const allOptions =
+            document.querySelectorAll(".option");
+
+
+        allOptions.forEach(button => {
+            button.disabled = true;
+        });
+
+
+        if (selectedIndex === correctIndex) {
+
+            selectedButton.classList.add("correct");
+
+            feedback.textContent =
+                "✅ Correct! Great job!";
+
+            feedback.className =
+                "correct-text";
+
+            score++;
+
+        } else {
+
+            selectedButton.classList.add("wrong");
+
+            allOptions[correctIndex]
+                .classList.add("correct");
+
+
+            feedback.textContent =
+                `❌ Wrong! Correct answer: ${questions[currentQuestion].options[correctIndex]}`;
+
+            feedback.className =
+                "wrong-text";
+
+        }
+
+
+        scoreText.textContent =
+            `Score: ${score}`;
+
+
+        nextBtn.classList.remove("hidden");
+
+    }
+
+
+    /* =========================
+       NEXT QUESTION
+    ========================= */
+
+
+    nextBtn.addEventListener(
+        "click",
+        () => {
+
+            currentQuestion++;
+
+
+            if (
+                currentQuestion <
+                questions.length
+            ) {
+
+                loadQuestion();
+
+            } else {
+
+                showResult();
+
+            }
+
+        }
+    );
+
+
+    /* =========================
+       SHOW RESULT
+    ========================= */
+
+
+    function showResult() {
+
+        quiz.classList.add("hidden");
+
+        result.classList.remove("hidden");
+
+
+        finalScore.textContent =
+            `${score}/${questions.length}`;
+
+
+        if (score === 10) {
+
+            resultMessage.textContent =
+                "🏆 Perfect Score! Outstanding work!";
+
+        }
+
+        else if (score >= 8) {
+
+            resultMessage.textContent =
+                "🌟 Excellent! You have a strong understanding!";
+
+        }
+
+        else if (score >= 6) {
+
+            resultMessage.textContent =
+                "👏 Great job! Keep improving your skills!";
+
+        }
+
+        else if (score >= 4) {
+
+            resultMessage.textContent =
+                "👍 Good attempt! Practice makes progress!";
+
+        }
+
+        else {
+
+            resultMessage.textContent =
+                "💪 Keep practicing and try again!";
+
+        }
+
+    }
+
+
+    /* =========================
+       RESTART
+    ========================= */
+
+
+    document
+        .getElementById("restartBtn")
+        .addEventListener(
+            "click",
+            () => {
+
+                currentQuestion = 0;
+
+                score = 0;
+
+
+                result.classList.add("hidden");
+
+                quiz.classList.remove("hidden");
+
+
+                loadQuestion();
+
+            }
+        );
+
+
+    /* =========================
+       START
+    ========================= */
+
+
+    loadQuestion();
+
+</script>
+
+</body>
+
+</html>
+```
